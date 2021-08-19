@@ -22,6 +22,7 @@
 #include <vector>
 #include <unordered_map>
 #include <xyz/openbmc_project/Common/error.hpp>
+#include <gpiod.h>
 
 #include <filesystem>
 
@@ -63,6 +64,46 @@ RikgpioMgr::RikgpioMgr(boost::asio::io_service& io_,
 
     phosphor::logging::log<phosphor::logging::level::INFO>(
         ("Rikgpio started mode " + mode).c_str());
+
+
+
+  const char *chipname = "gpiochip0";
+  struct gpiod_chip *chip;
+  struct gpiod_line *line7;    // Red LED
+  int i, val;
+
+  // Open GPIO chip
+  chip = gpiod_chip_open_by_name(chipname);
+
+  // Open GPIO lines
+  line7 = gpiod_chip_get_line(chip, 7);
+
+  // Open switch line for input
+  gpiod_line_request_input(line7, "example1");
+
+  // Blink LEDs in a binary pattern
+  i = 0;
+  while (i < 10) {
+
+    // Read button status and exit if pressed
+    val = gpiod_line_get_value(line7);
+    phosphor::logging::log<phosphor::logging::level::INFO>("Rikgpio executed Line7 at setgpio = " + val);
+
+    if (val == 0) {
+      break;
+    }
+
+    usleep(100000);
+    i++;
+  }
+
+  // Release lines and chip
+  gpiod_line_release(line7);
+  gpiod_chip_close(chip);
+
+
+
+
 
     int ret_code = 0;
     ret_code += system("systemctl start rikgpio.service");

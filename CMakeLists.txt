@@ -36,14 +36,14 @@ pkg_check_modules(LOGGING phosphor-logging REQUIRED)
 include_directories(${LOGGING_INCLUDE_DIRS})
 link_directories(${LOGGING_LIBRARY_DIRS})
 
-# import postfix
+# import libgpiod
 #find_package(PkgConfig REQUIRED)
-#pkg_check_modules(POSTFIX postfix REQUIRED)
-#include_directories(${POSTFIX_INCLUDE_DIRS})
-#link_directories(${POSTFIX_LIBRARY_DIRS})
+#pkg_check_modules(LIBGPIOD libgpiod REQUIRED)
+#include_directories(${LIBGPIOD_INCLUDE_DIRS})
+#link_directories(${LIBGPIOD_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
-#target_link_libraries(${PROJECT_NAME} ${POSTFIX_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${LIBGPIOD_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SDBUSPLUSPLUS_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${DBUSINTERFACE_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
