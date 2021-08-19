@@ -1,0 +1,10 @@
+[Unit]
+Description=Logs system statistics to the systemd journal
+Wants=rikgpio.timer
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/usr/sbin/gpiotimer.sh'
+
+[Install]
+WantedBy=multi-user.target

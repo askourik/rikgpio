@@ -1,0 +1,10 @@
+[Unit]
+Description=Logs some system statistics to the systemd journal
+Requires=rikgpio.service
+
+[Timer]
+Unit=rikgpio.service
+OnCalendar=*:0/30
+
+[Install]
+WantedBy=timers.target

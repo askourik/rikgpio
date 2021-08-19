@@ -1,4 +1,6 @@
 /*
+// Copyright (c) 2019 Intel Corporation
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -17,12 +19,21 @@
 #include <boost/asio/io_service.hpp>
 #include <sdbusplus/asio/object_server.hpp>
 
+static constexpr const char* RikModeManual =
+    "xyz.openbmc_project.Time.Synchronization.Method.Manual";
+
+static constexpr const char* RikModeNTP =
+    "xyz.openbmc_project.Time.Synchronization.Method.NTP";
+
 class RikgpioMgr
 {
     boost::asio::io_service& io;
     sdbusplus::asio::object_server& server;
     std::shared_ptr<sdbusplus::asio::connection> conn;
     std::shared_ptr<sdbusplus::asio::dbus_interface> iface;
+
+    std::string mode = RikModeManual;
+
 
   public:
     RikgpioMgr(boost::asio::io_service& io,

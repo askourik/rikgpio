@@ -1,2 +1,2 @@
 # rikgpio
-GPIO processing for OpenBMC
+GPIO wrapper for OpenBMC

@@ -8,5 +8,6 @@ ExecStart=/usr/bin/rikgpio
 StartLimitInterval=0
 Type=dbus
 BusName=xyz.openbmc_project.rikgpio
+
 [Install]
 WantedBy=basic.target
