@@ -1,63 +1,26 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(rikgpio CXX)
+project(dbustest CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-rtti")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
-add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
-add_definitions(-DBOOST_ALL_NO_LIB)
-add_definitions(-DBOOST_NO_RTTI)
-add_definitions(-DBOOST_NO_TYPEID)
-add_definitions(-DBOOST_ASIO_DISABLE_THREADS)
+set(SRC_FILES_DBUSTEST
+    dbustest.cpp
+)
 
-set(SRC_FILES src/mainapp.cpp src/rikgpio.cpp)
-
-# import sdbusplus
+# import systemd
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDBUSPLUSPLUS sdbusplus REQUIRED)
-include_directories(${SDBUSPLUSPLUS_INCLUDE_DIRS})
-link_directories(${SDBUSPLUSPLUS_LIBRARY_DIRS})
-find_program(SDBUSPLUSPLUS sdbus++)
+pkg_check_modules(SYSTEMD systemd REQUIRED)
+include_directories(${SYSTEMD_INCLUDE_DIRS})
+link_directories(${SYSTEMD_LIBRARY_DIRS})
 
-# phosphor-dbus-interfaces
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(DBUSINTERFACE phosphor-dbus-interfaces REQUIRED)
-include_directories(${DBUSINTERFACE_INCLUDE_DIRS})
-link_directories(${DBUSINTERFACE_LIBRARY_DIRS})
+add_executable(${PROJECT_NAME} ${SRC_FILES_DBUSTEST})
 
-# import phosphor-logging
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LOGGING phosphor-logging REQUIRED)
-include_directories(${LOGGING_INCLUDE_DIRS})
-link_directories(${LOGGING_LIBRARY_DIRS})
-
-# import libgpiod
-#find_package(PkgConfig REQUIRED)
-#pkg_check_modules(LIBGPIOD libgpiod REQUIRED)
-#include_directories(${LIBGPIOD_INCLUDE_DIRS})
-#link_directories(${LIBGPIOD_LIBRARY_DIRS})
-
-add_executable(${PROJECT_NAME} ${SRC_FILES})
-target_link_libraries(${PROJECT_NAME} ${LIBGPIOD_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${SDBUSPLUSPLUS_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${DBUSINTERFACE_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} phosphor_logging)
-
-set(SERVICE_FILES
-    ${PROJECT_SOURCE_DIR}/xyz.openbmc_project.rikgpio.service
-    )
+target_link_libraries(${PROJECT_NAME} pthread)
+target_link_libraries(${PROJECT_NAME} dbus systemd)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-install(FILES ${SERVICE_FILES} DESTINATION /lib/systemd/system/)
-install(FILES ${PROJECT_SOURCE_DIR}/rikgpio.conf DESTINATION /etc/rikgpio COMPONENT config)
-install(FILES ${PROJECT_SOURCE_DIR}/rikgpio.service DESTINATION /etc/systemd/system)
-install(FILES ${PROJECT_SOURCE_DIR}/rikgpio.timer DESTINATION /etc/systemd/system)
-install(PROGRAMS ${PROJECT_SOURCE_DIR}/gpioxxx.sh DESTINATION /usr/sbin)
-install(PROGRAMS ${PROJECT_SOURCE_DIR}/gpiotimer.sh DESTINATION /usr/sbin)
+
+
+
 
